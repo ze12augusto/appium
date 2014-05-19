@@ -9,8 +9,10 @@ if (!APP_PATH) {
     die("App did not exist!");
 }
 
+// require_once('PHPUnit/Extensions/AppiumTestCase.php');
 
-class SimpleTest extends Sauce\Sausage\WebDriverTestCase
+
+class SimpleTest extends PHPUnit_Extensions_AppiumTestCase
 {
     protected $numValues = array();
 
@@ -20,22 +22,23 @@ class SimpleTest extends Sauce\Sausage\WebDriverTestCase
             'port' => 4723,
             'browserName' => '',
             'desiredCapabilities' => array(
-                'device' => 'iPhone Simulator',
-                'version' => '6.0',
-                'platform' => 'Mac',
+                'platformName' => 'iOS',
+                'platformVersion' => '7.0',
+                'deviceName' => 'iPhone Simulator',
+                'name' => 'Appium iOS Test, PHP',
                 'app' => APP_PATH
             )
         )
     );
 
-    public function elemsByTag($tag)
+    public function elemsByClassName($klass)
     {
-        return $this->elements($this->using('tag name')->value($tag));
+        return $this->elements($this->using('class name')->value($klass));
     }
 
     protected function populate()
     {
-        $elems = $this->elemsByTag('textField');
+        $elems = $this->elemsByClassName('UIATextField');
         foreach ($elems as $elem) {
             $randNum = rand(0, 10);
             $elem->value($randNum);
@@ -46,9 +49,9 @@ class SimpleTest extends Sauce\Sausage\WebDriverTestCase
     public function testUiComputation()
     {
         $this->populate();
-        $buttons = $this->elemsByTag('button');
+        $buttons = $this->elemsByClassName('UIAButton');
         $buttons[0]->click();
-        $texts = $this->elemsByTag('staticText');
+        $texts = $this->elemsByClassName('UIAStaticText');
         $this->assertEquals(array_sum($this->numValues), (int)($texts[0]->text()));
     }
 }

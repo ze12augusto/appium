@@ -1,5 +1,12 @@
 {
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/appium/php-client"
+        }
+    ],
     "require": {
-        "sauce/sausage": ">=0.6.0"
+        "appium/php-client": "dev-master",
+        "sauce/sausage": "0.15.0"
     }
 }

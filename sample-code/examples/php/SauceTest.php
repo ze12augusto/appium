@@ -6,31 +6,32 @@
 require_once "vendor/autoload.php";
 define("APP_URL", "http://appium.s3.amazonaws.com/TestApp6.0.app.zip");
 
-class SauceTest extends Sauce\Sausage\WebDriverTestCase
+class SauceTest extends Sauce\Sausage\MobileTestCase
 {
     protected $numValues = array();
 
     public static $browsers = array(
         array(
             'browserName' => '',
-            'seleniumServerRequestsTimeout' => 240,
             'desiredCapabilities' => array(
-                'platform' => 'Mac 10.8',
-                'device' => 'iPhone Simulator',
-                'app' => APP_URL,
-                'version' => '6.1',
+                'appium-version' => '1.0',
+                'platformName' => 'iOS',
+                'platformVersion' => '7.0',
+                'deviceName' => 'iPhone Simulator',
+                'name' => 'Sauce/Appium iOS Test, PHP',
+                'app' => APP_URL
             )
         )
     );
 
-    public function elemsByTag($tag)
+    public function elemsByClassName($klass)
     {
-        return $this->elements($this->using('tag name')->value($tag));
+        return $this->elements($this->using('class name')->value($klass));
     }
 
     protected function populate()
     {
-        $elems = $this->elemsByTag('textField');
+        $elems = $this->elemsByClassName('UIATextField');
         foreach ($elems as $elem) {
             $randNum = rand(0, 10);
             $elem->value($randNum);
@@ -41,9 +42,9 @@ class SauceTest extends Sauce\Sausage\WebDriverTestCase
     public function testUiComputation()
     {
         $this->populate();
-        $buttons = $this->elemsByTag('button');
+        $buttons = $this->elemsByClassName('UIAButton');
         $buttons[0]->click();
-        $texts = $this->elemsByTag('staticText');
+        $texts = $this->elemsByClassName('UIAStaticText');
         $this->assertEquals(array_sum($this->numValues), (int)($texts[0]->text()));
     }
 }
