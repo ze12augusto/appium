@@ -73,31 +73,48 @@ createEmulator(){
 	${ANDROID_HOME}/tools/android create avd -f -a -c 20M -s HVGA -n $2 -t "Google Inc.:Google APIs:$1" --abi armeabi-v7a
 }
 
+hasAlreadyConnectedAndroid(){
+
+	ADB_DEVICES=$( adb devices | wc -l  )
+
+	if [ $ADB_DEVICES -gt 2 ]
+		then
+			return 0;
+	else
+		return 1;
+	fi
+}
+
 main(){
 
-	verificaSeAvdTargetExisteCasoNaoSetaValorDefault $1
-	verificaSeAvdNameExisteCasoNaoSetaValorDefault $2
-
-	if [ -z "$ANDROID_HOME" ]; then
-	    echo "Variavel de ambiente ANDROID_HOME nao foi encontrada, por favor adicione ela e tente novamente!!!"
+	if hasAlreadyConnectedAndroid; then
+		echo "has already connected android"
 	else
-			
-			if emulatorExists ${AVD_NAME}; then
-		   		
-				executeEmulator ${AVD_NAME}		
-			else
-				
-				createEmulator ${AVD_TARGET} ${AVD_NAME}
 
+		verificaSeAvdTargetExisteCasoNaoSetaValorDefault $1
+		verificaSeAvdNameExisteCasoNaoSetaValorDefault $2
+
+		if [ -z "$ANDROID_HOME" ]; then
+		    echo "Variavel de ambiente ANDROID_HOME nao foi encontrada, por favor adicione ela e tente novamente!!!"
+		else
+				
 				if emulatorExists ${AVD_NAME}; then
 			   		
-					executeEmulator ${AVD_NAME}
+					executeEmulator ${AVD_NAME}		
 				else
+					
+					createEmulator ${AVD_TARGET} ${AVD_NAME}
 
-					echo "Ocorreu um erro ao criar o emulador:  ${AVD_NAME}"
+					if emulatorExists ${AVD_NAME}; then
+				   		
+						executeEmulator ${AVD_NAME}
+					else
 
-				fi
-			fi		
+						echo "Ocorreu um erro ao criar o emulador:  ${AVD_NAME}"
+
+					fi
+				fi		
+		fi
 	fi
 }
 
