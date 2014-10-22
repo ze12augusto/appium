@@ -49,7 +49,7 @@ verificaSeAvdNameExisteCasoNaoSetaValorDefault(){
 executeEmulator(){
 
 	echo "Executando emulador:  $1"
-	${ANDROID_HOME}/tools/emulator -avd $1 &
+	${ANDROID_HOME}/tools/emulator -no-boot-anim -prop persist.sys.language=pt -prop persist.sys.country=BR -avd $1 -no-snapshot-load -no-snapshot-save -wipe-data
 }
 
 emulatorExists(){
@@ -75,14 +75,26 @@ createEmulator(){
 
 hasAlreadyConnectedAndroid(){
 
-	ADB_DEVICES=$( adb devices | wc -l  )
+	count=1
 
-	if [ $ADB_DEVICES -gt 2 ]
-		then
-			return 0;
-	else
-		return 1;
-	fi
+	while [ $count -le 4 ]
+	do
+		
+		ADB_DEVICES=$( adb devices | wc -l  )
+
+		if [ $count -gt 2 ]; then
+
+			if [ $ADB_DEVICES -gt 2 ]
+				then
+					return 0;
+			else
+				return 1;
+			fi
+			break;
+		fi
+		
+		count=$(( count+1 ))
+	done
 }
 
 main(){
